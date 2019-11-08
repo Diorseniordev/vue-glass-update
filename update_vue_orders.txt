@@ -1,0 +1,101 @@
+(params) => {
+  // you have to set each of these as a string parameter for this opration (or somehow assign them)
+  const BackerID = params.BackerID;
+  const ItemNumber = params.ItemNumber;
+  const Email = params.Email;
+  let count = 0;
+  
+  const sql_params = {
+    ItemID: params.ItemID,
+    OrderStatus: params.OrderStatus,
+    PrescriptionHold: params.PrescriptionHold,
+    AddressHold: params.AddressHold,
+
+    ItemNumberofTotalOrderNumber: params.ItemNumberofTotalOrderNumber,
+    Name: params.Name,
+    AddressLine1: params.AddressLine1,
+    AddressLine2: params.AddressLine2,
+    AddressCity: params.AddressCity,
+    AddressState: params.AddressState,
+    AddressPostalCode: params.AddressPostalCode,
+    AddressCountry: params.AddressCountry,
+    FullAddress: params.FullAddress,
+    AddressPhone: params.AddressPhone,
+
+    PledgedAt: params.PledgedAt,
+    Notes: params.Notes,
+    SkuName: params.SkuName,
+    SkuCode: params.SkuCode,
+    Quantity: params.Quantity,
+    ODRightSphere_SPH: params.ODRightSphere_SPH,
+    ODRightCylinder_CYL: params.ODRightCylinder_CYL,
+    ODRightAxis: params.ODRightAxis,
+    OSLeftSphere_SPH: params.OSLeftSphere_SPH,
+    OSLeftCylinder_CYL: params.OSLeftCylinder_CYL,
+    OSLeftAxis: params.OSLeftAxis,
+    ODRightADD: params.ODRightADD,
+    OSLeftADD: params.OSLeftADD,
+    PDOneorTwoNumbers: params.PDOneorTwoNumbers,
+    SingularPDValue: params.SingularPDValue,
+    ODRightPupillaryDistance_PD: params.ODRightPupillaryDistance_PD,
+    OSLeftPupillaryDistance_PD: params.OSLeftPupillaryDistance_PD,
+    MismatchError: params.MismatchError,
+    PrescriptionError: params.PrescriptionError,
+    EmailError: params.EmailError,
+    PaymentError: params.PaymentError,
+    PrescriptionLastModified: params.PrescriptionLastModified
+  };
+  let index = 0;
+  // this overwrites the existing object, so only use if you have the entire object!
+  Object.keys(sql_params).forEach((key) => ((sql_params[key] === null) || (sql_params[key] === undefined)) && delete sql_params[key]);
+
+  let sql1 = "'set ",
+    sql2 = "', ExpressionAttributeValues: {";
+  let delsql = "SELECT * FROM aws_dynamodb.update_item WHERE $body=(SELECT {TableName : 'vue_orders', AttributeUpdates: {";
+  let delsql1 = "";
+  let values = {};
+  Object.keys(sql_params).forEach(function(key) {
+    console.log(key, sql_params[key]);
+    if (sql_params[key] !== '') {
+      count++;
+      
+      values[key] = sql_params[key];
+      let val_type = "S";
+      if (typeof sql_params[key] === "boolean") {
+        val_type = 'BOOL';
+      } else if (!isNaN(sql_params[key])) {
+        val_type = 'N';
+      }
+      if (index === 0) {
+        if (key == 'Name') sql1 += " " + "#nameStr" + "=" + " :val" + key + " "; 
+        else sql1 += " " + key + "=" + " :val" + key + " ";
+        sql2 += " ':val" + key + "': { " + val_type + ": @" + key + "}";
+        index++;
+      } else {
+        if(key == 'Name') sql1 += ", " + "#nameStr" + "=" + " :val" + key + " ";
+        else sql1 += ", " + key + "=" + " :val" + key + " ";
+        sql2 += ", ':val" + key + "': { " + val_type + ": @" + key+ "}";
+        index++;
+      }
+    } else {
+
+      delsql1 += key + ": { Action: 'DELETE' }, ";
+    }
+
+  });
+  console.log(sql_params['Name'] != null);
+  if(sql_params['Name'] != null) sql2 += "}, ExpressionAttributeNames:{ '#nameStr': 'Name'"; 
+  let sql3 = "";
+
+  sql3 = "}, Key: { BackerID: { N: '" + BackerID + "' }, ItemNumber: { N: '" + ItemNumber + "' }}})";
+  let sql = "SELECT * FROM aws_dynamodb.update_item WHERE $body=(SELECT {TableName : 'vue_orders', UpdateExpression:" +
+    sql1 + sql2 + sql3;
+  console.log(delsql + delsql1 + sql3);
+  console.log(sql);
+  //let sql44="SELECT * FROM aws_dynamodb.update_item WHERE $body=(SELECT {TableName : 'vue_orders',UpdateExpression: 'set OrderStatus = :val1, AddressCity = :val2',ExpressionAttributeValues: {':val1': {N: '1'},':val2': {S: 'Little Rock'}},Key: {BackerID: { N: '6413200' },ItemID: { S: '6413200-1' }}})"
+  const result = count === 0 ? true : api.query(sql, values);
+  const result1 = api.query(delsql + delsql1 + sql3);
+  return {
+    mission: result && result1
+  };
+}

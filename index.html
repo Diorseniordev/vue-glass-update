@@ -137,7 +137,7 @@ figure {
 }
 @media screen and (max-width: 768px) {
   .fh5co-cover {
-    heifght: inherit;
+    height: inherit;
     padding: 3em 0;
   }
 }
@@ -150,7 +150,7 @@ figure {
 }
 @media screen and (max-width: 768px) {
   .fh5co-cover.fh5co-cover_2 {
-    heifght: inherit;
+    height: inherit;
     padding: 3em 0;
   }
 }
@@ -1683,6 +1683,35 @@ input[type="checkbox"] {
   width: 100px !important;
   padding: 0px;
 }
+.notifyjs-foo-base {
+  opacity: 0.85;
+  width: 400px;
+  background: rgb(253, 120, 120);
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.notifyjs-foo-base .title {
+  width: 380px;
+  float: left;
+  margin: 10px 0 0 10px;
+  text-align: right;
+}
+
+.notifyjs-foo-base .buttons {
+  width: 100px;
+  float: right;
+  font-size: 9px;
+  padding: 5px;
+  margin: 2px;
+}
+
+.notifyjs-foo-base button {
+  font-size: 9px;
+  padding: 5px;
+  margin: 2px;
+  width: 90px;
+}
 /*# sourceMappingURL=style.css.map */
 
     </style>
@@ -1730,6 +1759,7 @@ input[type="checkbox"] {
     <script>
       const transposit2 = new Transposit.Transposit(
         "https://vue-management-ui-staging-2ghmp.transposit.io"
+       // "https://vue-management-ui-staging-s74bh.transposit.io"
       );
     </script>
     <div id="root" class="container mt-3 mt-md-5" ></div>
@@ -1737,8 +1767,8 @@ input[type="checkbox"] {
     <script type="text/babel">
       class App extends React.Component {
         render() {
-          //return <LoginEmail/>;
-          return <ListViewTable email="jason@vueglasses.com"/>;
+          return <LoginEmail/>;
+          //return <ListViewTable email="boftx@sbcglobal.net"/>;
         }
       }
 
@@ -1913,13 +1943,13 @@ input[type="checkbox"] {
           //.runOperation('query_valid_check', {email:localStorage.getItem('email')})
           .runOperation('query_valid_check', {email:'jason@vueglasses.com'})
           .then(response => {
-              console.log("before check of valid session");
+            console.log("before check of valid session");
             console.log(response);
             if (response.status !== "SUCCESS") {
               throw response;
             }
             const results = response.result.results;
-console.log("here3");
+            console.log("here3");
             console.log(results);
             console.log(results.length == 1);
             const status = results[0].status;
@@ -1936,6 +1966,7 @@ console.log("here3");
               console.log("in check of valid session");
               console.log(res);
             if(res.length >= 1){
+              //if(1){  
                 let arr_result = transposit2
                 .runOperation(action, params)
                 .then(response => {
@@ -2013,6 +2044,7 @@ console.log("here3");
                 "10": "Received return, lens/frames will be redone and resent.",
                 "999": "Order has been cancelled."
               },
+            countryProvider:[{key:'US', value:'US'}, {key:'CL', value:'CL'}, {key:'UA', value:'UA'}, {key:'GB', value:'GB'}],
               addFlag: true,
               progressiveFlag:false
           }
@@ -2024,6 +2056,8 @@ console.log("here3");
                 this.setState({defaultVal: resData[0]});
                 this.setState({provider: resData});
                 //if (!this.state.progressiveFlag) $('.addInfo').hide();
+                //console.log(this.state.provider[0]['AddressCountry'])
+                $('.list-add-country').val(this.state.provider[0]['AddressCountry']).attr("selected", "selected");
                 if (this.state.provider[0].AddressHold === 'Yes') {$('.addHoldBtn').text('Release Hold');}
                 else {$('.addHoldBtn').text('Place Address Hold') };     
             } else {
@@ -2104,12 +2138,12 @@ console.log("here3");
           return this.state.orderStatus[cell];
         }
         errorFormatter = (cell, row) => {
+          if (row.MismatchError === '' && row.PrescriptionError === '') return 'None';
           return row.MismatchError === '' ? row.PrescriptionError : row.MismatchError + "<br/>" + row.PrescriptionError;
         }
         prescriptionDataFormatter = (cell, row) => {
-          let btn;
-          if (cell === 'Yes') btn = <button className='btn btn-primary btn-xs '>Release Hold</button>;
-          else if (cell === 'No') btn = <button className='btn btn-primary btn-xs '>Place Hold</button>;
+          let btn = <button className='btn btn-primary btn-xs '>View Prescription</button>;
+          //else if (cell === 'No') btn = <button className='btn btn-primary btn-xs '>Place Hold</button>;
           return btn;
         }
 
@@ -2117,7 +2151,8 @@ console.log("here3");
           event.preventDefault();
           console.log(event.target.name, event.target.value)
           switch (event.target.name) {
-            case 'list-add-line':
+            case 'list-add-country':
+              
              
               break;
             case 'list-add-city':
@@ -2134,32 +2169,42 @@ console.log("here3");
             
             let editAddBtn = $('.editAddBtn')
             if (this.state.addFlag) {
-              if ($('input').attr('disabled')) {$('input').removeAttr('disabled'); editAddBtn.text('Save Address');}
+              if ($('input').attr('disabled')) {
+                $('input').removeAttr('disabled'); 
+                $('.list-add-country').removeAttr('disabled');
+                 editAddBtn.text('Save');
+                 $('.cancelAddBtn').removeAttr('hidden');
+              }
               else {
                 $('input').attr('disabled', 'disabled'); 
-                editAddBtn.text('Edit Address');
+                $('.list-add-country').attr('disabled', 'disabled');
+                $('.cancelAddBtn').attr('hidden', 'hidden');
+                editAddBtn.text('Edit');
                 let add_line = $('.list-add-line').val();
+                let add_name = $('.list-add-name').val();
                 let add_city = $('.list-add-city').val();
                 let add_state = $('.list-add-state').val();
                 let add_postalcode = $('.list-add-postalcode').val();
                 let add_country = $('.list-add-country').val();
                 let add_phone = $('.list-add-phone').val();
                 let add_line2 = $('.list-add-line2').val();
+                let fsuc = true;
                 for (let i=0;i<this.state.provider.length; i++) {
-                  transposit_action('update_vue_orders', {AddressLine1:add_line,AddressLine2:add_line2, AddressCity:add_city, AddressState:add_state,  AddressPostalCode:add_postalcode, AddressCountry:add_country, AddressPhone:add_phone, BackerID:this.state.provider[i]["BackerID"], ItemNumber:this.state.provider[i]["ItemNumber"]})
+                  transposit_action('update_vue_orders', {AddressLine1:add_line,AddressLine2:add_line2, Name:add_name, AddressCity:add_city, AddressState:add_state,  AddressPostalCode:add_postalcode, AddressCountry:add_country, AddressPhone:add_phone, BackerID:this.state.provider[i]["BackerID"], ItemNumber:this.state.provider[i]["ItemNumber"]})
                   .then(res => {
                     if(res != 'error') {
                         this.state.defaultVal.AddressLine1 = add_line;
+                        this.state.defaultVal.Name = add_name;
                         this.state.defaultVal.AddressCity = add_city;
                         this.state.defaultVal.AddressState = add_state;
                         this.state.defaultVal.AddressPostalCode = add_postalcode;
                         this.state.defaultVal.AddressCountry = add_country;
                         this.state.defaultVal.AddressPhone = add_phone;
                         this.state.defaultVal.AddressLine2 = add_line2;
-                        $.notify("Address Information Changed Successfully", "success");
+                        if (i == this.state.provider.length - 1 && fsuc) $.notify("Address Information Changed Successfully", "success");
                     }else {
                         console.log('timeout update address')
-                        
+                        fsuc = false;
                     }
                     
                     
@@ -2181,8 +2226,10 @@ console.log("here3");
           } else if(event.target.name === 'cancelAddBtn') {
             $('input').attr('disabled', 'disabled');
             $('.editAddBtn').text('Edit Address');
+            $('.cancelAddBtn').attr('hidden', 'hidden');
             this.state.provider[0] = this.state.defaultVal;
             $('.list-add-line').val(this.state.defaultVal['AddressLine1']);
+            $('.list-add-name').val(this.state.defaultVal['Name']);
             $('.list-add-line2').val(this.state.defaultVal['AddressLine2']);
             $('.list-add-city').val(this.state.defaultVal['AddressCity']);
             $('.list-add-state').val(this.state.defaultVal['AddressState']);
@@ -2258,7 +2305,7 @@ console.log("here3");
         beforeSaveCell = (row, cellName, cellValue) => {
           // do your stuff...
           
-          if (cellName !== 'SkuName') {
+          if (cellName !== '') {
             let tmp = {};
             tmp[cellName] = cellValue === 'Yes' ? true: false;
             //if (cellName == 'OrderStatus') tmp[cellName] = 1;
@@ -2360,7 +2407,7 @@ console.log("here3");
           return (
             <React.Fragment>
             <div>
-            <img  className="float-md-right ml-md-3" width="64" height="64"  data-type="image" itemProp="image" src="https://beta.enjoyvue.com/assets/img_meet_vue-8ea323c2681789482a07571563cc980eeaf89fed5e617cb7f917d427be6cbe32.png">
+            <img  className="float-md-right ml-md-3" width="64" height="64"  data-type="image" itemProp="image" src="">
             </img>
             <h1>Vue Order Dashboard</h1>
             <p className="text-secondary">
@@ -2369,25 +2416,29 @@ console.log("here3");
             <h4>Address</h4>
             </div>
             <form className="addInfo">
-              <div class="form-row">
-                <input type="text" className="list-name-line col-md-6" name="list-name-line" defaultValue={this.state.provider[0]['Name']} onChange={this.handleChange} disabled placeholder="Name"/>
+              <div className="form-row">
+                <input type="text" className="list-add-name col-md-6" name="list-add-name" defaultValue={this.state.provider[0]['Name']} onChange={this.handleChange} disabled placeholder="Name"/>
                 <input type="tel" className="list-add-phone col-md-6" name="list-add-phone" defaultValue={this.state.provider[0]['AddressPhone']} onChange={this.handleChange} disabled placeholder="Phone"/>
               </div>
-              <div class="form-row">
+              <div className="form-row">
                 <input className="list-add-line col-md-6" name="list-add-line" defaultValue={this.state.provider[0]['AddressLine1']} onChange={this.handleChange} disabled placeholder="Address Line 1"/>
                 <input className="list-add-line2 col-md-6" name="list-add-line2" defaultValue={this.state.provider[0]['AddressLine2']} onChange={this.handleChange} disabled placeholder="Address Line 2"/>
               </div>
-              <div class="form-row">
+              <div className="form-row">
                 <input className="list-add-city col-md-3" name="list-add-city" defaultValue={this.state.provider[0]['AddressCity']} onChange={this.handleChange} disabled placeholder="City"/>
                 <input className="list-add-state col-md-3" name="list-add-state" defaultValue={this.state.provider[0]['AddressState']} onChange={this.handleChange} disabled placeholder="State"/>
                 <input className="list-add-postalcode col-md-3" name="list-add-postalcode" defaultValue={this.state.provider[0]['AddressPostalCode']} onChange={this.handleChange} disabled placeholder="Postal Code"/>
-                <input className="list-add-country col-md-3" name="list-add-country" defaultValue={this.state.provider[0]['AddressCountry']} onChange={this.handleChange} disabled placeholder="Country/Region"/>
+                <select className="list-add-country" name="list-add-country" defaultValue={this.state.provider[0]['AddressCountry']} onChange={this.handleChange} disabled>
+                    {this.state.countryProvider.map((obj) => 
+                      <option key={obj.key}>{obj.value}</option>
+                    )}
+                  </select>
               </div>
               <div>
-                {/*Hidden for 10/31 launch because we don't want people making edits yet
+                {/*Hidden for 10/31 launch because we don't want people making edits yet*/}
                 <button className="editAddBtn btn btn-primary" name="editAddBtn" onClick={this.handleEdit}>Edit Address</button>
-                <button className="cancelAddBtn btn btn-secondary" name="cancelAddBtn" onClick={this.handleEdit}>Cancel Edit</button>
-                */}
+                <button className="cancelAddBtn btn btn-secondary" name="cancelAddBtn" onClick={this.handleEdit} hidden>Cancel Edit</button>
+                
                 {/*<button className="addHoldBtn btn btn-danger" name="addHoldBtn" onClick={this.handleEdit}>Place Address Hold</button>*/}
               </div>
             </form>
@@ -2397,12 +2448,13 @@ console.log("here3");
             <BootstrapTable data={ this.state.provider.filter((d) => {return this.isOrderForGlasses(d['SkuName'])}) } cellEdit={ cellEditProp } >
                 <TableHeaderColumn dataField='BackerID' isKey hidden>BackerID</TableHeaderColumn>
                 
-                <TableHeaderColumn dataField='SkuName' customEditor={ { getElement: createDetailEditor } } tdStyle={ { whiteSpace: 'normal', color:'blue', cursor:'pointer' } }>Item</TableHeaderColumn>
+                <TableHeaderColumn dataField='SkuName' editable={false} tdStyle = {{verticalAlign: 'middle', whiteSpace: 'normal'}}>Item</TableHeaderColumn>
+                <TableHeaderColumn dataField='' customEditor={ { getElement: createDetailEditor } } tdStyle = {{whiteSpace: 'normal', textAlign: 'center', verticalAlign: 'middle'}} dataFormat={this.prescriptionDataFormatter}>Prescriptions</TableHeaderColumn>
                 {/*Hidden for 10/31 launch because we don't want people making edits yet
                 <TableHeaderColumn dataField='PrescriptionHold'   customEditor={ { getElement: createPrescriptionEditor } }  dataFormat={this.prescriptionDataFormatter}>Prescriptions </TableHeaderColumn>
             	  */}
                 <TableHeaderColumn dataField='OrderStatus'   tdStyle={ { whiteSpace: 'normal' } } dataFormat={this.dataFormatter} editable={false} >Order Status</TableHeaderColumn>
-                <TableHeaderColumn dataField='' editable={false} dataFormat={this.errorFormatter}>Errors</TableHeaderColumn>
+                <TableHeaderColumn dataField='' editable={false} tdStyle = {{whiteSpace: 'normal', textAlign: 'center', verticalAlign: 'middle'}} dataFormat={this.errorFormatter}>Errors</TableHeaderColumn>
             </BootstrapTable>
             </div>
 
@@ -2491,6 +2543,8 @@ console.log("here3");
             dataCyl: [],
             dataAxis: [],
             dataAdd: [],
+            dataSinglePD:[],
+            dataDualPD:[],
             defaultVal:[],
             progressiveFlag: false,
             errorStatus:false
@@ -2505,13 +2559,41 @@ console.log("here3");
           let i;
           
           
-          for (i=-18; i<=6; i+=0.25) this.state.data.push({key: 4 * (i + 18), value:i});
-          for (i=-6; i<=6; i+=0.25) this.state.dataCyl.push({key: 4 * (i + 6), value:i});
+          for (i=-18; i<=6; i+=0.25) this.state.data.push({key: 4 * (i + 18), value:i.toFixed(2)});
+          for (i=-6; i<=6; i+=0.25) this.state.dataCyl.push({key: 4 * (i + 6), value:i.toFixed(2)});
           for (i=0; i<=180; i+=1) this.state.dataAxis.push({key:  i , value:i});
           for (i=0; i<=3.5; i+=0.25) this.state.dataAdd.push({key: 4 * i, value:i});
+          for (i=48; i<=80; i+=1) this.state.dataSinglePD.push({key: i, value:i});
+          for (i=24; i<=40; i+=1) this.state.dataDualPD.push({key: i, value:i});
         }
         componentDidMount() {
           
+          $.notify.addStyle('foo', {
+            html: 
+              "<div>" +
+                "<div class='clearfix'>" +
+                  "<div class='title' data-notify-html='title'/>" +
+                  "<div class='buttons'>" +
+                    "<button class='no'>No</button>" +
+                    "<button class='yes' data-notify-text='button'></button>" +
+                  "</div>" +
+                "</div>" +
+              "</div>"
+          });
+
+          //listen for click events from this style
+          $(document).on('click', '.notifyjs-foo-base .no', function() {
+            //programmatically trigger propogating hide event
+            $(this).trigger('notify-hide');
+          });
+          $(document).on('click', '.notifyjs-foo-base .yes', function() {
+            //show button text
+            $('.modal-save').text('Save');
+            $('input.detail_editor').removeAttr('disabled');
+            $('select.detail_editor').removeAttr('disabled');
+            //hide notification
+            $(this).trigger('notify-hide');
+          });
           if (((this.props.row.SkuCode).toLowerCase()).indexOf("progressive") === -1) {
             
             $('.od-add-detail').hide();
@@ -2589,7 +2671,7 @@ console.log("here3");
             } else if(err.indexOf("missing progressive data") >= 0 )
             {
               if (this.props.row.ODRightADD !== '' && this.props.row.OSLeftADD !== '')  {
-		this.props.row.PrescriptionError = '';
+		            this.props.row.PrescriptionError = '';
               }
             } else if(err.indexOf("sku not progressive") >= 0 )
             {
@@ -2615,6 +2697,7 @@ console.log("here3");
         }
         validateError() {
           if(this.props.row.MismatchError === '' && this.props.row.PrescriptionError === '') {
+            $('.error-detail').hide();
             return true;
           } else {
             console.log("error: "+ this.props.row.MismatchError);
@@ -2624,9 +2707,37 @@ console.log("here3");
         }
         updateData() {
           console.log("in updte data");
-          console.log(this.props.row);
-          this.checkError();
-
+          
+          if ($('.modal-save').text() === 'Edit') {
+            if(this.canEditPrescription(this.props.row.OrderStatus)) {
+              if (this.props.row.OrderStatus >= 2){
+                $.notify({
+                  title: 'Your lenses have already been sent to the factory. If you change your prescription, this will add another 5 weeks for them to be remade. Are you sure you want to edit?',
+                  button: 'Yes'
+                }, { 
+                  style: 'foo',
+                  autoHide: false,
+                  clickToHide: false
+                });
+              } else {
+                $('.modal-save').text('Save');
+                $('input.detail_editor').removeAttr('disabled');
+                $('select.detail_editor').removeAttr('disabled');
+                
+              }
+            } else {
+              $.notify(`Prescription can't be modified. Order Status = ${this.props.row.OrderStatus}`, "info");
+            }
+            
+            
+          }
+          else {
+            console.log(this.props.row);
+            this.checkError();
+            this.validateError() ? this.props.onUpdate("save"): $.notify('You need to fix all the errors before saving', 'error');
+ 
+          }
+          
           /*if((this.props.row.SkuCode.toLowerCase()).indexOf("progressive") === -1 && (this.props.row.ODRightADD !== '' || this.props.row.OSLeftADD !== '')){
             console.log("debug0");
             console.log(this.props.row);
@@ -2640,7 +2751,7 @@ console.log("here3");
             }
           }
 */
-          this.validateError() ? this.props.onUpdate("save"): $.notify('You need to fix all the errors before saving', 'error');
+          
           
         }
         close = () => {
@@ -2650,13 +2761,20 @@ console.log("here3");
         }
         handleChange = e => {
           e.preventDefault();
-          if(e.target.name === 'SingularPDValue' || e.target.name === 'ODRightPupillaryDistance_PD' || e.target.name === 'OSLeftPupillaryDistance_PD' ){
+          if(e.target.name === 'SingularPDValue'){
             if((e.target.value < 40 || e.target.value > 80) && e.target.value >= 10) {
               $.notify("Values must between 40 and 80", "warning");
               this.state.row[e.target.name] = "";
               this.props.row[e.target.name] = "";
               }
             else this.state.row[e.target.name] = e.target.value;
+          } else if (e.target.name === 'ODRightPupillaryDistance_PD' || e.target.name === 'OSLeftPupillaryDistance_PD' ){
+              if((e.target.value < 24 || e.target.value > 40) && e.target.value >= 10) {
+                $.notify("Values must between 40 and 80", "warning");
+                this.state.row[e.target.name] = "";
+                this.props.row[e.target.name] = "";
+                }
+              else this.state.row[e.target.name] = e.target.value;
           } else this.state.row[e.target.name] = e.target.value;
           if(e.target.name === 'PDOneorTwoNumbers') {
             console.log(e.target.value);
@@ -2695,28 +2813,28 @@ console.log("here3");
             <div className={ `modal fade ${fadeIn}` } id='myModal' role='dialog' style={ { display } }>
               <div className='modal-dialog'>
                 <div className='modal-content'>
-                  <div class="modal-header">
-                    <h5 class="modal-title">Prescription Details</h5>
+                  <div className="modal-header">
+                    <h5 className="modal-title">Prescription Details</h5>
                   </div>
                   <div className='modal-body'>
 
 
 
-                    <div class="container">
-                      <div class="row">
+                    <div className="container">
+                      <div className="row">
                         <strong className="error-detail">Error: </strong>
                         <label className="error" >{this.props.row.MismatchError}</label>  
                         <label className="error" >{this.props.row.PrescriptionError}</label> 
                       </div> 
-                      <div class="row">
+                      <div className="row">
                         <strong>Frame: </strong>
                         <label className="detail-glass-info-name">{this.props.row.SkuName}</label>
                       </div>
-                      <div class="row">
+                      <div className="row">
                         <strong>Prescription Info:</strong>  
                       </div>
-                      <div class="row">
-                        <table class="table-borderless">
+                      <div className="row">
+                        <table className="table-borderless">
                           <thead>
                             <tr>
                               <th scope="col"></th>
@@ -2729,24 +2847,24 @@ console.log("here3");
                             <tr>
                               <th scope="row">OD (Right)</th>
                               <td>
-                                <select disabled="true" className="ODRightSphere_SPH" name="ODRightSphere_SPH" onChange={this.handleChange} defaultValue={this.state.row.ODRightSphere_SPH}>
-                                  <option selected="selected"></option>
+                                <select disabled className="ODRightSphere_SPH detail_editor" name="ODRightSphere_SPH" onChange={this.handleChange} defaultValue={this.state.row.ODRightSphere_SPH}>
+                                  
                                   {this.state.data.map((obj) => 
                                   <option key={obj.key}>{obj.value}</option>
                                   )}
                                 </select>
                               </td>
                               <td>
-                                <select disabled="true" className="ODRightCylinder_CYL" name="ODRightCylinder_CYL" onChange={this.handleChange}  defaultValue={this.props.row.ODRightCylinder_CYL}>
-                                  <option selected="selected"></option>
+                                <select disabled className="ODRightCylinder_CYL detail_editor" name="ODRightCylinder_CYL" onChange={this.handleChange}  defaultValue={this.props.row.ODRightCylinder_CYL}>
+                                  
                                   {this.state.dataCyl.map((obj) => 
                                   <option key={obj.key}>{obj.value}</option>
                                   )}
                                 </select>
                               </td>
                               <td>
-                                <select disabled="true" className="ODRightAxis" name="ODRightAxis" onChange={this.handleChange}  defaultValue={this.props.row.ODRightAxis}>
-                                  <option selected="selected"></option>
+                                <select disabled className="ODRightAxis detail_editor" name="ODRightAxis" onChange={this.handleChange}  defaultValue={this.props.row.ODRightAxis}>
+                                  
                                   {this.state.dataAxis.map((obj) => 
                                   <option key={obj.key}>{obj.value}</option>
                                   )}
@@ -2756,24 +2874,24 @@ console.log("here3");
                             <tr>
                               <th scope="row">OS (Left)</th>
                               <td>
-                                <select disabled="true" className="OSLeftSphere_SPH" name="OSLeftSphere_SPH" onChange={this.handleChange}  defaultValue={this.props.row.OSLeftSphere_SPH}>
-                                  <option selected="selected"></option>
+                                <select disabled className="OSLeftSphere_SPH detail_editor" name="OSLeftSphere_SPH" onChange={this.handleChange}  defaultValue={this.props.row.OSLeftSphere_SPH}>
+                                  
                                   {this.state.data.map((obj) => 
                                   <option key={obj.key}>{obj.value}</option>
                                   )}
                                 </select>
                               </td>
                               <td>
-                                <select disabled="true" className="OSLeftCylinder_CYL" name="OSLeftCylinder_CYL" onChange={this.handleChange}  defaultValue={this.props.row.OSLeftCylinder_CYL}>
-                                  <option selected="selected"></option>
+                                <select disabled className="OSLeftCylinder_CYL detail_editor" name="OSLeftCylinder_CYL" onChange={this.handleChange}  defaultValue={this.props.row.OSLeftCylinder_CYL}>
+                                  
                                   {this.state.dataCyl.map((obj) => 
                                   <option key={obj.key}>{obj.value}</option>
                                   )}
                                 </select>
                               </td>
                               <td>
-                                <select disabled="true" className="OSLeftAxis" name="OSLeftAxis" onChange={this.handleChange}  defaultValue={this.props.row.OSLeftAxis}>
-                                  <option selected="selected"></option>
+                                <select disabled className="OSLeftAxis detail_editor" name="OSLeftAxis" onChange={this.handleChange}  defaultValue={this.props.row.OSLeftAxis}>
+                                  
                                   {this.state.dataAxis.map((obj) => 
                                   <option key={obj.key}>{obj.value}</option>
                                   )}
@@ -2783,35 +2901,47 @@ console.log("here3");
                           </tbody>
                         </table>
                       </div>
-                      <div class="row">
+                      <div className="row">
                         <div className="col-md-6">
                           <label>Pupillary distance (PD) format: </label>
                         </div>
                         <div className="col-md-6">
-                          <select disabled="true" className="PDOneorTwoNumbers" name="PDOneorTwoNumbers" onChange={this.handleChange}  defaultValue={this.props.row.PDOneorTwoNumbers}>
+                          <select disabled className="PDOneorTwoNumbers detail_editor" name="PDOneorTwoNumbers" onChange={this.handleChange}  defaultValue={this.props.row.PDOneorTwoNumbers}>
                               <option key='0' val='One Number'>One Number</option>
                               <option key='1' val='Two Separate Numbers'>Two Separate Numbers</option>
                           </select>
                         </div>
                       </div>
-                      <div class="row">
+                      <div className="row">
                         <div className="col-md-6 one-pupil">
                           <label>Pupillary distance (PD): </label>
                         </div>
                         <div className="col-md-6 one-pupil">
-                          <input disabled="true" className="SingularPDValue"  onChange={this.handleChange} name="SingularPDValue" defaultValue={this.state.row.SingularPDValue}></input>
+                          <select disabled className="SingularPDValue detail_editor"  onChange={this.handleChange} name="SingularPDValue" defaultValue={this.state.row.SingularPDValue}>
+                            {this.state.dataSinglePD.map((obj) => 
+                                <option key={obj.key}>{obj.value}</option>
+                                )}
+                          </select>
                         </div>
                         <div className="col-md-3 two-pupil">
                           <label>OD (Right) PD: </label>
                         </div>
                         <div className="col-md-3 two-pupil">
-                          <input disabled="true" className="ODRightPupillaryDistance_PD"  onChange={this.handleChange} name="ODRightPupillaryDistance_PD" defaultValue={this.state.row.ODRightPupillaryDistance_PD}></input>
+                          <select disabled className="ODRightPupillaryDistance_PD detail_editor"  onChange={this.handleChange} name="ODRightPupillaryDistance_PD" defaultValue={this.state.row.ODRightPupillaryDistance_PD}>
+                            {this.state.dataDualPD.map((obj) => 
+                              <option key={obj.key}>{obj.value}</option>
+                            )}
+                          </select>
                         </div>
                         <div className="col-md-3 two-pupil">
                           <label>OS (Left) PD: </label>
                         </div>
                         <div className="col-md-3 two-pupil">
-                          <input disabled="true" className="OSLeftPupillaryDistance_PD"  onChange={this.handleChange} name="OSLeftPupillaryDistance_PD" defaultValue={this.state.row.OSLeftPupillaryDistance_PD}></input>
+                          <select disabled className="OSLeftPupillaryDistance_PD detail_editor"  onChange={this.handleChange} name="OSLeftPupillaryDistance_PD" defaultValue={this.state.row.OSLeftPupillaryDistance_PD}>
+                            {this.state.dataDualPD.map((obj) => 
+                              <option key={obj.key}>{obj.value}</option>
+                            )}
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -2821,6 +2951,8 @@ console.log("here3");
                     {/*Hidden for 10/31 launch because we don't want people making edits yet
                     <button type='button' className='btn btn-primary' onClick={ this.updateData }>Save</button>
                     */}
+
+                    <button type='button' className='btn btn-primary modal-save' onClick={ this.updateData }>Edit</button>
                     <button type='button' className='btn btn-default' onClick={ this.close }>Close</button>
                   </div>
 
@@ -2832,6 +2964,7 @@ console.log("here3");
       }
       //console.log(ReactBsTable, BootstrapTable, TableHeaderColumn);
       ReactDOM.render(<App/>, document.getElementById("root"));
+      
     </script>
   </body>
 </html>
