@@ -1909,8 +1909,8 @@ input[type="checkbox"] {
     <script type="text/babel">
       class App extends React.Component {
         render() {
-          return <LoginEmail/>;
-          // return <ListViewTable email="yun@vueglasses.com"/>;
+          // return <LoginEmail/>;
+          return <ListViewTable email="yun@vueglasses.com"/>;
         }
       }
 
@@ -2083,33 +2083,33 @@ input[type="checkbox"] {
         
           console.log(localStorage.getItem('email'));
           let res = await transposit2
-          .runOperation('query_valid_check', {email:localStorage.getItem('email')})
-          // .runOperation('query_valid_check', {email:'forsberg@outlook.com'})
+          // .runOperation('query_valid_check', {email:localStorage.getItem('email')})
+          .runOperation('query_valid_check', {email:'forsberg@outlook.com'})
           .then(response => {
-            console.log("before check of valid session");
-            console.log(response);
-            if (response.status !== "SUCCESS") {
-              throw response;
-            }
-            const results = response.result.results;
-            console.log("here3");
-            console.log(results);
-            console.log(results.length == 1);
-            const status = results[0].status;
-            console.log(status);
-            console.log(results[0].results);
-            console.log(results[0].results.status);
-            if (status === "SUCCESS") {
-              return results;
-            } else  {
-              throw response;
-            }
+            // console.log("before check of valid session");
+            // console.log(response);
+            // if (response.status !== "SUCCESS") {
+            //   throw response;
+            // }
+            // const results = response.result.results;
+            // console.log("here3");
+            // console.log(results);
+            // console.log(results.length == 1);
+            // const status = results[0].status;
+            // console.log(status);
+            // console.log(results[0].results);
+            // console.log(results[0].results.status);
+            // if (status === "SUCCESS") {
+            //   return results;
+            // } else  {
+            //   throw response;
+            // }
           })
           .then(res => {
               console.log("in check of valid session");
               console.log(res);
-            if(res.length >= 1){
-              // if(1){  
+            // if(res.length >= 1){
+              if(1){  
                 let arr_result = transposit2
                 .runOperation(action, params)
                 .then(response => {
@@ -3037,7 +3037,33 @@ input[type="checkbox"] {
                 </div>
                 </React.Fragment>
               );
-           
+            // if(this.props.row.MismatchError != "" && this.props.row.PrescriptionError != "") {
+            //   return(
+            //     <React.Fragment>
+                
+            //     <div >
+            //       <strong >Error: </strong>
+            //       <label className="error" >{this.props.row.MismatchError}/</label>    
+                  
+            //       <label className="error" >{this.props.row.PrescriptionError}</label>
+            //     </div>
+            //     </React.Fragment>
+            //   );
+            // } else if (this.props.row.MismatchError != "") {
+            //   return(
+            //     <div >
+            //       <strong >Error: </strong>
+            //       <label className="error" >{this.props.row.MismatchError}</label>    
+            //     </div>
+            //   );
+            // } else if (this.props.row.PrescriptionError != "") {
+            //   return(
+            //     <div >
+            //       <strong >Error: </strong>
+            //       <label className="error" >{this.props.row.PrescriptionError}</label>
+            //     </div>
+            //   );
+            // }
         } 
         render() {
           const fadeIn = this.state.open ? 'in' : '';
