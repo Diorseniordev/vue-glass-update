@@ -1991,8 +1991,7 @@ input[type="checkbox"] {
           event.preventDefault();
           const { name, value } = event.target;
           let errors = this.state.errors;
-          //console.log(name, value);
-
+          
           switch (name) {
             case "email":
               errors.email = this.validEmailRegex.test(value)

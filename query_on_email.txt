@@ -1,0 +1,22 @@
+(params) => {
+  const email_results = api.run("this.query_on_email_sql",{email: params.email});
+  const deleted_order_status = 999;
+  var flag = false;
+  for (var i=0; i<email_results.length; i++) {
+    if(email_results[i].OrderStatus.N != deleted_order_status) flag = true;
+  }
+  if (email_results.length >= 1 && flag) {
+    api.run("this.createVueSession",{email: params.email});
+  } else {
+    const content = "We don't see your email address, please send an email to "+env.get('email_sender');
+    api.run("this.send_mail",{ email: params.email, content: content});
+  }
+  return {
+    status: "SUCCESS"
+  }  
+}
+
+/*
+ * For sample code and reference material, visit
+ * https://www.transposit.com/docs/references/js-operations
+ */
