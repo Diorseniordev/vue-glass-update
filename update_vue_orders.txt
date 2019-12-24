@@ -65,6 +65,7 @@
         val_type = 'BOOL';
       } else if (!isNaN(sql_params[key])) {
         val_type = 'N';
+        if(key == 'AddressPhone') val_type = 'S';
       }
       if (index === 0) {
         if (key == 'Name') sql1 += " " + "#nameStr" + "=" + " :val" + key + " "; 
